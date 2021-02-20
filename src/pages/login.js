@@ -1,10 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useContext, useEffect, useState } from 'react';
+import { Link, useHistory } from 'react-router-dom';
 import * as ROUTES from '../constants/routes';
 import instagramPage from '../images/iphone-with-profile.jpg';
 import logo from '../images/logo.png';
+import FirebaseContext from '../context/firebase';
 
 export default function Login() {
+  // access to firebase
+  const { firebase } = useContext(FirebaseContext);
+  const history = useHistory();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -13,6 +18,19 @@ export default function Login() {
   useEffect(() => {
     document.title = 'Login - Instagram';
   }, []);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      await firebase.auth().signInWithEmailAndPassword(email, password);
+      history.push(ROUTES.DASHBOARD);
+    } catch (e) {
+      setEmail('');
+      setPassword('');
+      setError(e.message);
+    }
+  };
+
   return (
     <div className='container flex mx-auto max-w-screen-md items-center h-screen'>
       <div className='flex w-3/5'>
@@ -23,8 +41,8 @@ export default function Login() {
           <h1 className='flex justify-center w-full'>
             <img src={logo} alt='Instagram' className='mt-2 w-6/12 mb-4' />
           </h1>
-
-          <form method='POST'>
+          {error && <p className='mb-4 text-xs text-red-500'>{error}</p>}
+          <form method='POST' onSubmit={handleLogin}>
             <input
               aria-label='Enter your email address'
               className='text-sm w-full mr-3 py-5 px-4 h-2 border rounded mb-2'

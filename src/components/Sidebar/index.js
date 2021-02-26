@@ -1,7 +1,13 @@
 import React from 'react';
+import useUser from '../../hooks/use-user';
 
 const Sidebar = () => {
-  return <div>I am the sidebar</div>;
+  // coming from firestore
+  const {
+    user: { docId, userId, following, username, fullName } = {}, // default for errors
+  } = useUser();
+
+  return <div></div>;
 };
 
 export default Sidebar;
